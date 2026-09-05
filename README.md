@@ -1,14 +1,17 @@
 # CT Imaging Turnaround Time & Radiology Workflow Analysis
 
-**An end-to-end healthcare operations analysis: SQL, Power BI, and a conclusion that contradicted the obvious answer.**
+**<p align="justify">An end-to-end healthcare operations analysis: SQL, Power BI, and a conclusion that contradicted the obvious answer.**
+</p>
 
 ![](Intro_image.jfif)
 
+<p align="justify">
 A radiology department knows something is wrong. CT results are unpredictable. One patient gets a scan and a signed report inside two hours; another waits half a day for the same exam. Nobody can say why, because nobody has ever measured the workflow in pieces.
 
 Everyone assumes it is the scanner. It usually is.
 
 This project takes 20,000 CT examinations apart, stage by stage, and asks the data where the time actually goes. The answer turned out to be somewhere else entirely.
+</P>
 
 > ### A note on the data before you read further
 >
