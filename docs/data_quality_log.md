@@ -61,7 +61,7 @@ It is the cheapest thing in the entire pipeline and it caught the most expensive
 
 **What was done:** `ROW_NUMBER()` partitioned by `Exam_ID`, ordered by `Order_Time` ascending, keeping `rn = 1`.
 
-**Why the earliest record:** the first order is the clinically originating event. A later duplicate is a re-entry artefact. Keeping it would restart the turnaround clock and understate TAT for every affected exam.
+**Why the earliest record:** the first order is the clinically originating event. A later duplicate is a re-entry artifact. Keeping it would restart the turnaround clock and understate TAT for every affected exam.
 
 **Then something reassuring turned up.** All 75 pairs are identical across all 18 fields, and every pair shares the same `Order_Time`. These are not two competing versions of an exam. They are the same row written twice.
 
@@ -78,7 +78,7 @@ That has a useful consequence. The `ORDER BY Order_Time` tie-break is technicall
 | Field | What was actually in there | Real categories |
 |---|---|---:|
 | `Priority` | `Routine`, `routine`, `Urgent`, `URGENT`, `STAT`, `Stat` | 3 |
-| `Contrast_Status` | `Yes`, `YES`, `No`, `No ` (trailing space) | 2 |
+| `Contrast_Status` | `Yes`, `YES`, `No`, `NO ` (trailing space) | 2 |
 
 That trailing space is the interesting one. It is invisible in every result grid ever built, renders identically to `No`, and quietly creates a second category in every grouped query you write. It was confirmed by wrapping the value in brackets and measuring its length:
 
@@ -89,7 +89,7 @@ FROM ct_imaging_raw GROUP BY Contrast_Status;
 
 **Why it mattered:** left alone, `GROUP BY Priority` would have returned six rows instead of three, splitting every category and understating all of them. The dashboard would have shown six priority bars for three priorities and nobody would necessarily have noticed.
 
-**What was done:** `LOWER(TRIM(...))` normalisation mapped to canonical labels in `sql/03`.
+**What was done:** `LOWER(TRIM(...))` normalization mapped to canonical labels in `sql/03`.
 
 ---
 
@@ -124,6 +124,8 @@ Order → Schedule → Arrival → Scan Start → Scan End → Report Start → 
 
 Anything out of that order is impossible, not unusual. It means the record is corrupt.
 
+The counts below are measured across the **full 20,000 record dataset**, before any filtering on exam status. That is the right population for a data quality audit, because a corrupt timestamp on a canceled exam is still a corrupt timestamp.
+
 | Check | Failures |
 |---|---:|
 | `Scheduled_Time` before `Order_Time` | 35 |
@@ -136,7 +138,31 @@ Anything out of that order is impossible, not unusual. It means the record is co
 
 The distinct count is lower than the column total because some records fail more than one check.
 
-**What was done: flagged `Invalid` with `data_quality_flag`, excluded at the KPI view. Not repaired, not deleted.**
+### Why the population flow shows 169, not 174
+
+These two numbers describe different populations, and both are correct:
+
+| Number | Population | What it counts |
+|---|---|---:|
+| **174** | All 20,000 de-duplicated records | Every record with a broken timestamp, whatever its status |
+| **169** | The 19,206 completed exams only | The subset of those 174 that are also completed exams |
+
+The five record difference is made up of **four no-shows and one canceled exam** that also carry chronology violations. Those five were already removed one step earlier, by the filter on completed exams, so they cannot be removed a second time by the chronology filter.
+
+In the population flow in Section 6, each row shows what that step removed **from the records still remaining at that point**. The chronology step runs after the status filter, so it can only ever exclude the 169 that survived it.
+
+Broken down by population, the per-check counts look like this:
+
+| Check | All 20,000 records | Completed exams only |
+|---|---:|---:|
+| `Scheduled_Time` before `Order_Time` | 35 | 35 |
+| `Scan_End_Time` before `Scan_Start_Time` | 80 | 76 |
+| `Report_Start_Time` before `Scan_End_Time` | 60 | 59 |
+| **Distinct records** | **174** | **169** |
+
+One thing worth checking before anyone asks: none of the 75 removed duplicate copies carried a chronology violation, so the 174 figure is identical before and after de-duplication. De-duplication is not a third population to reconcile here.
+
+**What was done: flagged `Invalid` with `data_quality_flag`, excluded from the KPI view. Not repaired, not deleted.**
 
 **Why not repaired.** There is no honest way to invent a timestamp. Any correction would be a fabricated value dressed up as a measurement, and it would be indistinguishable from a real one six months later.
 
@@ -146,19 +172,23 @@ The distinct count is lower than the column total because some records fail more
 
 ## 6. Where all 20,075 rows ended up
 
+Each row shows what that step removed from the records still remaining at that point, so the numbers are sequential rather than independent.
+
 | Step | Records | Removed | Reason |
 |---|---:|---:|---|
 | Raw records loaded | 20,075 | | |
 | After de-duplication | 20,000 | 75 | Repeated `Exam_ID` |
-| Completed exams only | 19,206 | 794 | 400 cancelled, 394 no-show |
+| Completed exams only | 19,206 | 794 | 400 canceled, 394 no-show |
 | Passing chronology validation | 19,037 | 169 | Flagged `Invalid` |
 | **With a finalized report** | **18,981** | 56 | Report never signed off |
 
 Every excluded record is accounted for. No row disappears without a line explaining it.
 
-The 794 cancelled and no-show exams are worth a second look. They cannot have a turnaround time, so they sit outside the KPIs by definition. But they are 3.97% of everything ordered, and they consumed booked scanner capacity to produce nothing clinical. That is a real operational cost that turnaround metrics are structurally incapable of seeing, which is exactly why it gets its own reporting line rather than being quietly filtered away.
+The 169 here is the completed-exam subset of the 174 broken records counted in Section 5. Five of those 174 are no-shows or cancellations and were already removed by the previous step.
 
-One small trap worth flagging. The raw file contains 403 cancelled exams; after de-duplication it is 400, because three of the 75 duplicates happened to be cancelled records. A raw-file count and a post-cleaning count are different numbers, and quoting the wrong one is an easy mistake to make.
+The 794 canceled and no-show exams are worth a second look. They cannot have a turnaround time, so they sit outside the KPIs by definition. But they are 3.97% of everything ordered, and they consumed booked scanner capacity to produce nothing clinical. That is a real operational cost that turnaround metrics are structurally incapable of seeing, which is exactly why it gets its own reporting line rather than being quietly filtered away.
+
+One small trap worth flagging. The raw file contains 403 canceled exams; after de-duplication it is 400, because three of the 75 duplicates happened to be canceled records. A raw-file count and a post-cleaning count are different numbers, and quoting the wrong one is an easy mistake to make.
 
 ---
 
