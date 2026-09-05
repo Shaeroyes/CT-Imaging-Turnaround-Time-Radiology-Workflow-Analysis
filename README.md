@@ -2,7 +2,7 @@
 
 **An end-to-end healthcare operations analysis: SQL, Power BI, and a conclusion that contradicted the obvious answer.**
 
-![](Intro_image.jpg)
+![](Intro_image.jfif)
 
 A radiology department knows something is wrong. CT results are unpredictable. One patient gets a scan and a signed report inside two hours; another waits half a day for the same exam. Nobody can say why, because nobody has ever measured the workflow in pieces.
 
