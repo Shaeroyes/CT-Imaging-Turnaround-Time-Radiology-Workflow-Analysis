@@ -274,33 +274,11 @@ This is a completely separate calculation from the variance decomposition, and i
 
 ---
 
-## What I would tell the department
-
-**1. Start with order-to-schedule.** It is the longest stage at 56.8 minutes, the single biggest source of variation at 50%, and it has the widest tail of any stage (90th percentile of 105 minutes). It is also administrative rather than clinical, which makes it the cheapest thing on this list to change. Auto-scheduling protocol-eligible routine exams and routing STAT orders straight into a held slot go after the biggest lever first.
-
-**2. Then go after reporting turnaround.** 43.6 minutes on average, the widest spread of anything after the scan (standard deviation 32.3, 90th percentile 83 minutes), 35% of total variance. Worklist prioritisation by clinical urgency, plus a look at radiologist coverage against evening and night volume, both act here.
-
-**3. Do not spend money on scanner capacity.** Arrival to scan, scan duration, and the handoff to reporting are fast and tightly clustered, and together they account for 4% of the variance. A new scanner would not move the headline number. This is the recommendation that saves the most money, and it is the one that would never have been made without measuring every stage.
-
-**4. Replace the flat SLA with tiered targets.** The single threshold reports 12% compliance and hides the fact that routine imaging is broadly fine while STAT is not. Tiered targets put attention where the actual gap is.
-
-**5. Report the demand-loss rate.** 794 cancelled and no-show exams, 3.97% of all orders, consumed booked capacity and produced nothing. Turnaround metrics cannot see this by construction, so it needs its own line.
-
-**6. Reconcile row counts on every load.** The failure that quietly deleted 60 records raised no error and would have reported a perfect completion rate.
-
----
-
-## Checking the work
-
-Every headline figure was rebuilt from scratch in Excel, straight from the raw CSV, without touching any SQL output. The workbook ([`analysis/CT_Imaging_Excel_Validation.xlsx`](analysis/CT_Imaging_Excel_Validation.xlsx)) recalculates each stage duration from the raw timestamps using live formulas, then rebuilds the KPIs, the variance decomposition, the segment breakdowns, and the data quality checks on top of them. Nothing is pasted in.
-
-**Every SQL versus Excel difference comes out at zero.**
-
-Three details the workbook explains rather than hides:
-
-- The Excel formulas copy MySQL's minute arithmetic exactly, using `TRUNC(ROUND((end-start)*86400,0)/60)`. Without matching the truncation, the two systems would disagree by about half a minute on every KPI and the whole validation would fail for a reason that has nothing to do with the analysis.
-- The data quality sheet counts casing defects with `SUMPRODUCT(--EXACT(...))` rather than `COUNTIF`, because `COUNTIF` is case-insensitive in Excel and would cheerfully report zero casing problems in a column full of them.
-- The six stage averages add up to 174.9, while measured average turnaround is 177.4. Each stage truncates to whole minutes separately while total turnaround truncates once, so six half-minute roundings pile up. Expected, not an error, and written on the sheet so the 2.4 minute gap has an answer ready.
+## Recommendations
+- My first recommendation would be to investigate the Order-to-Schedule process because it was the largest workflow stage at about 56.81 minutes.
+- My second recommendation would be to review reporting workflow, particularly during night operations, because reporting duration was the second-largest stage overall and was higher during the night shift.
+- I would also conduct a focused review of CT Angiography and Routine examinations because they showed particularly high turnaround times and poor SLA performance.
+- I would avoid recommending major scanner investment based solely on this analysis because scanner-level scan duration was relatively consistent.
 
 ---
 
