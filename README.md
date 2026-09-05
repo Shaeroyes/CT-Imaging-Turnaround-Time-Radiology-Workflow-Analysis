@@ -8,7 +8,7 @@
 <p align="justify">
 A radiology department knows something is wrong. CT results are unpredictable. One patient gets a scan and a signed report inside two hours; another waits half a day for the same exam. Nobody can say why, because nobody has ever measured the workflow in pieces. </p>
 
-Everyone assumes it is the scanner. It usually is.
+The scanner is an obvious place to look first.
 
 <p align="justify">This project takes 20,000 CT examinations apart, stage by stage, and asks the data where the time actually goes. The answer turned out to be somewhere else entirely. </P>
 
@@ -164,7 +164,7 @@ Measuring all six separately, rather than guessing which one mattered, is what m
 | Average reporting duration | 43.6 min |
 | Demand lost to cancellations and no-shows | 3.97% |
 
-<p align="justify">Median and 90th percentile sit next to the mean on purpose. Turnaround data leans right: a handful of very slow exams drag the average above what a typical patient actually experiences. The 90th percentile is the number that matters to a referring clinician, because it describes the exam they are chasing up the phone about.</p>
+<p align="justify">Median and 90th percentile sit next to the mean on purpose. Turnaround data leans right: a handful of very slow exams drag the average above what a typical patient actually experiences. The 90th percentile is important to a referring clinician because it represents the longer turnaround times they may need to call and follow up on.</p>
 
 ### Finding 1: two stages cause 86% of the variation
 
@@ -291,7 +291,7 @@ Comparing exams that met the 120-minute target against those that missed it:
 ## What this analysis cannot tell you
 
 - **The data is synthetic.** The relationships in it were generated, not observed. The method transfers to real data. The specific numbers do not.
-- <p align="justify">Exam volume is nearly flat across all 24 hours, which no real radiology department has ever looked like. Hour-of-day turnaround is worth reading; hour-of-day volume is an artifact of how the data was made.</p>
+- <p align="justify">Exam volume is nearly flat across all 24 hours, which is unlikely to reflect typical real world radiology volume patterns. Hour-of-day turnaround is worth reading; hour-of-day volume is an artifact of how the data was made.</p>
 - <p align="justify">The SLA thresholds are assumptions, chosen to be reasonable, not standards.</p>
 - <p align="justify">169 completed exams were excluded for failing chronology checks. They are broken by construction, so nothing was imputed.</p>
 - <p align="justify">Every figure here uses `TIMESTAMPDIFF(MINUTE, ...)`, which truncates toward zero. Recomputing without truncation gives an average of 177.85 instead of 177.36. The half-minute difference does not matter at this scale, but it is documented so the discrepancy has an explanation rather than being a loose end.</p>
@@ -323,7 +323,7 @@ Comparing exams that met the 120-minute target against those that missed it:
 │   ├── CT_Imaging_Excel_Validation.xlsx   Independent check on every KPI
 │   └── sql_output_*.jpg                   Query results as evidence
 └── docs/
-    ├── CT_Imaging_Case_Study.pdf        The full written case study
+    ├── CT_Imaging_Case_Study.pdf 	The full written case study
     └── data_quality_log.md               Every defect, how it was found, what was done
 ```
 
