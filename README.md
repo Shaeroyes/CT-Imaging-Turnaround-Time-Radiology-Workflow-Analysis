@@ -40,7 +40,7 @@ Behind it sits a star schema:
 <p align="justify">
 CT turnaround times were inconsistent, and the department had no visibility into why. Without a breakdown of the workflow into measurable pieces, leadership could not tell whether the delay lived in scheduling, in the scan itself, or in the radiologist's reading queue.
 </p>
-<p align="justify">That gap has real costs. Improvement effort gets aimed at the wrong target. Staffing and equipment decisions get made on instinct. And nobody can give a referring physician an honest answer about when a result will land.<>
+<p align="justify">That gap has real costs. Improvement effort gets aimed at the wrong target. Staffing and equipment decisions get made on instinct. And nobody can give a referring physician an honest answer about when a result will land.</p>
 
 So the question was simple to state and harder to answer:
 
@@ -99,7 +99,7 @@ Row-count reconciliation now runs on every load, before anything else.** It is t
 <p align="justify">
 The category problems are the sneaky kind. `Priority` arrived as `Routine`, `routine`, `Urgent`, `URGENT`, `STAT`, and `Stat`. Contrast status included `"No "` with a trailing space, which looks identical to `No` in any result grid you will ever open. Left alone, every grouped query would have split each real category across several rows and quietly understated all of them.</p>
 
-<p align="justify">The duplicates turned out to be reassuring rather than alarming. All 75 pairs are byte-for-byte identical across all 18 fields and share the same order timestamp. They are load artefacts, not two versions of the truth. That means the tie-break rule used to remove them is arbitrary and provably safe, because either copy gives the same answer.</p>
+<p align="justify">The duplicates turned out to be reassuring rather than alarming. All 75 pairs are byte-for-byte identical across all 18 fields and share the same order timestamp. They are load artifacts, not two versions of the truth. That means the tie-break rule used to remove them is arbitrary and provably safe, because either copy gives the same answer.</p>
 
 ### Two decisions worth defending
 
@@ -113,11 +113,11 @@ Impossible timestamps were flagged, not fixed.** There is no honest way to inven
 |---|---:|---:|---|
 | Loaded from source | 20,075 | | |
 | After removing duplicates | 20,000 | 75 | Repeated `Exam_ID` |
-| Completed exams only | 19,206 | 794 | 400 cancelled, 394 no-show |
+| Completed exams only | 19,206 | 794 | 400 canceled, 394 no-show |
 | Passing the chronology checks | 19,037 | 169 | Flagged `Invalid` |
 | **With a finalized report** | **18,981** | 56 | Report never signed off |
 
-<p align="justify">Every excluded record is accounted for. The 794 cancelled and no-show exams cannot have a turnaround time, so they sit outside the KPIs, but they are reported on their own as a demand-loss figure. They represent booked capacity that produced nothing clinical, which is exactly the kind of number that vanishes if you only ever measure the exams that happened.</p>
+<p align="justify">Every excluded record is accounted for. The 794 canceled and no-show exams cannot have a turnaround time, so they sit outside the KPIs, but they are reported on their own as a demand-loss figure. They represent booked capacity that produced nothing clinical, which is exactly the kind of number that vanishes if you only ever measure the exams that happened.</p>
 
 Full detail: [`docs/data_quality_log.md`](docs/data_quality_log.md)
 
@@ -157,7 +157,7 @@ Measuring all six separately, rather than guessing which one mattered, is what m
 
 | KPI | Value |
 |---|---:|
-| Completed exams analysed | 18,981 |
+| Completed exams analyzed | 18,981 |
 | Average turnaround | 177.4 min |
 | Median turnaround | 169.0 min |
 | 90th percentile turnaround | 248.0 min |
@@ -179,8 +179,8 @@ Here is where the project earns its keep.
 | Order to Schedule | 56.8 | 38.6 | 32.0% | **50.4%** |
 | Reporting | 43.6 | 32.3 | 24.6% | **35.4%** |
 | Schedule to Arrival | 33.7 | 17.7 | 19.0% | 10.1% |
-| Scan duration | 22.7 | 8.3 | 12.8% | 2.5% |
-| Scan to Report start | 10.1 | 5.5 | 5.7% | 1.1% |
+| Scan Duration | 22.7 | 8.3 | 12.8% | 2.5% |
+| Scan to Report Start | 10.1 | 5.5 | 5.7% | 1.1% |
 | Arrival to Scan | 8.0 | 3.7 | 4.5% | 0.4% |
 
 The shares sum to exactly 100%, which is the built-in proof the decomposition is correct.
@@ -193,11 +193,11 @@ The shares sum to exactly 100%, which is the built-in proof the decomposition is
 >
 > <p align="justify">Turnaround is decided before the patient ever walks in, in how long an order sits waiting to be scheduled, and after they walk out, in how long a report sits waiting to be signed. The machine in the middle is doing its job.</p>
 
-That is the finding the department would never have reached by looking at scanner utilisation, which is where almost everyone looks first.
+That is the finding the department would never have reached by looking at scanner utilization, which is where almost everyone looks first.
 
 ### Finding 2: priority works, and it works exactly where you would hope
 
-| Priority | Exams | Avg TAT | Order to Schedule | Reporting | Scan duration |
+| Priority | Exams | Avg TAT | Order to Schedule | Reporting | Scan Duration |
 |---|---:|---:|---:|---:|---:|
 | STAT | 2,850 | 153.2 | 39.5 | 36.6 | 22.8 |
 | Urgent | 5,692 | 172.5 | 53.2 | 42.5 | 22.5 |
@@ -205,7 +205,7 @@ That is the finding the department would never have reached by looking at scanne
 
 <p align="justify">STAT exams finish 33.5 minutes ahead of Routine ones. Almost all of that gap comes from the two variable stages: 24.0 minutes of faster scheduling and 9.5 minutes of faster reporting.</p>
 
-<p align="justify">Scan duration barely moves, 22.5 to 22.8 minutes across all three. That is the right answer, and a good sanity check. Marking an exam STAT moves it up the queue. It does not make the scanner spin faster.</p>
+<p align="justify">Scan Duration barely moves, 22.5 to 22.8 minutes across all three. That is the right answer, and a good sanity check. Marking an exam STAT moves it up the queue. It does not make the scanner spin faster.</p>
 
 ### Finding 3: a finding I had to throw away
 
@@ -227,7 +227,7 @@ Splitting it out by exam type:
 
 <p align="justify">Look at the bottom row. Within CT Angiography, the exam type that uses the most contrast and takes the longest, contrast makes no measurable difference at all.</p>
 
-<p align="justify">Contrast is not an independent driver of turnaround at anything like the size the raw comparison suggests. Acting on that 8.8 minute figure would have meant chasing a confounder.</p>
+<p align="justify">Contrast does not appear to be an independent driver of turnaround at the magnitude suggested by the raw comparison. Acting on that 8.8 minute figure would have meant chasing a confounder.</p>
 
 ### Finding 4: the difference that was not worth reporting as one
 
@@ -260,9 +260,9 @@ Give each priority a target that matches its clinical urgency:
 
 <p align="justify">The department does not have a general slowness problem. It has a specific one: clinical urgency is not translating into compressed turnaround where it matters most. Which points straight back to Finding 1, because the STAT advantage that does exist is mostly faster scheduling.</p>
 
-*(Both thresholds are illustrative assumptions for a synthetic dataset, not published clinical standards. A real engagement would set them with radiology and the ED in the room.)*
+*(These thresholds are illustrative assumptions for a synthetic dataset, not published clinical standards. A real engagement would set them with radiology and the ED in the room.)*
 
-### Finding 6: the same answer, arrived at a different way
+### Finding 6: the same conclusion, reached through a different analysis.
 
 Comparing exams that met the 120-minute target against those that missed it:
 
@@ -274,7 +274,7 @@ Comparing exams that met the 120-minute target against those that missed it:
 
 <p align="justify">Of the 83-minute gap between a compliant exam and a breached one, 79% comes from two stages: waiting to be scheduled, and waiting to be read.</p>
 
-<p align="justify">Arrival to scan differs by 0.6 minutes. The imaging suite performs essentially identically whether an exam hits its target or misses it by an hour.</p>
+<p align="justify">Arrival to Scan differs by 0.6 minutes. The imaging suite performs essentially identically whether an exam hits its target or misses it by an hour.</p>
 
 <p align="justify">This is a completely separate calculation from the variance decomposition, and it lands in the same place. When two independent routes agree, the finding is solid.</p>
 
@@ -283,15 +283,15 @@ Comparing exams that met the 120-minute target against those that missed it:
 ## Recommendations
 - <p align="justify">My first recommendation would be to investigate the Order-to-Schedule process because it was the largest workflow stage at about 56.81 minutes.</p>
 - <p align="justify">My second recommendation would be to review reporting workflow, particularly during night operations, because reporting duration was the second-largest stage overall and was higher during the night shift.</p>
-- <p align="justify">I would also conduct a focused review of CT Angiography and Routine examinations because they showed particularly high turnaround times and poor SLA performance.</p>
-- <p align="justify">I would avoid recommending major scanner investment based solely on this analysis because scanner-level scan duration was relatively consistent.</p>
+- <p align="justify">I would also conduct focused reviews of CT Angiography examinations and Routine priority exams because both showed elevated turnaround times and poor SLA performance.</p>
+- <p align="justify">I would avoid recommending major scanner investment based solely on this analysis because scanner-level Scan Duration was relatively consistent.</p>
 
 ---
 
 ## What this analysis cannot tell you
 
 - **The data is synthetic.** The relationships in it were generated, not observed. The method transfers to real data. The specific numbers do not.
-- <p align="justify">Exam volume is nearly flat across all 24 hours, which no real radiology department has ever looked like. Hour-of-day turnaround is worth reading; hour-of-day volume is an artefact of how the data was made.</p>
+- <p align="justify">Exam volume is nearly flat across all 24 hours, which no real radiology department has ever looked like. Hour-of-day turnaround is worth reading; hour-of-day volume is an artifact of how the data was made.</p>
 - <p align="justify">The SLA thresholds are assumptions, chosen to be reasonable, not standards.</p>
 - <p align="justify">169 completed exams were excluded for failing chronology checks. They are broken by construction, so nothing was imputed.</p>
 - <p align="justify">Every figure here uses `TIMESTAMPDIFF(MINUTE, ...)`, which truncates toward zero. Recomputing without truncation gives an average of 177.85 instead of 177.36. The half-minute difference does not matter at this scale, but it is documented so the discrepancy has an explanation rather than being a loose end.</p>
@@ -323,24 +323,9 @@ Comparing exams that met the 120-minute target against those that missed it:
 │   ├── CT_Imaging_Excel_Validation.xlsx   Independent check on every KPI
 │   └── sql_output_*.jpg                   Query results as evidence
 └── docs/
-    ├── WALKTHROUGH.md                    Build it yourself, step by step
-    ├── CT_Imaging_Case_Study.docx        The full written case study
-    ├── data_quality_log.md               Every defect, how it was found, what was done
-    └── project_proposal.docx
+    ├── CT_Imaging_Case_Study.pdf        The full written case study
+    └── data_quality_log.md               Every defect, how it was found, what was done
 ```
-
----
-
-## Running it yourself
-
-You will need MySQL 8.0 or later (the analysis uses window functions) and Power BI Desktop.
-
-1. Run `sql/01_setup_and_ingestion.sql` to create the database and the staging table.
-2. Import `data/CT_Imaging_Raw_Data.csv` into `ct_imaging_raw_stage` using the Table Data Import Wizard. **Check that 20,075 rows loaded before you go any further.** That one check is what catches the ingestion failure described above.
-3. Run scripts `02` through `06` in order.
-4. Point Power BI at the `ct_imaging_analytics` database and load the `vw_ct_kpi_ready` view.
-
-<p align="justify">Every step is written out in full in **[`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md)**, including the ingestion failure and how to avoid it, the Power BI data model, the date table, all the DAX measures, how each of the three pages is built, and a troubleshooting section for the things that commonly go wrong.</p>
 
 ---
 
