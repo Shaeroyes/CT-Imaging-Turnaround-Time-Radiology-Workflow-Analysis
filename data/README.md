@@ -53,7 +53,7 @@ So the defects below were built in deliberately, and every one of them was found
 |---|---:|---|
 | The same `Exam_ID` appearing more than once | 75 | `sql/03` |
 | `Priority` typed as `URGENT`, `routine`, `Stat` | 219 | `sql/03` |
-| `Contrast_Status` typed as `YES`, or `"No "` with a trailing space | 181 | `sql/03` |
+| `Contrast_Status` typed as `YES` or `No` with a trailing space | 181 | `sql/03` |
 | Blank `Contrast_Status` | 119 | `sql/03`, kept as `Unknown` |
 | Blank `Scanner_ID` | 80 | `sql/03`, kept as `Unknown` |
 | Blank `Patient_Setting` | 80 | `sql/03`, kept as `Unknown` |
@@ -98,10 +98,12 @@ Full field definitions are in `CT_Imaging_Data_Dictionary.xlsx`.
 
 ## Where the synthetic data shows its seams
 
-Worth knowing, so nobody reads a generator artefact as an operational insight.
+Worth knowing, so nobody reads a generator artifact as an operational insight.
 
-**Exam volume is almost perfectly flat across all 24 hours**, running between roughly 740 and 870 exams per hour whether it is 3am or 3pm. No radiology department on earth looks like this. Turnaround by hour is meaningful and worth reading. Volume by hour is not, and the dashboard note says so.
+**Exam volume is almost perfectly flat across all 24 hours**, running between roughly 740 and 870 exams per hour whether it is 3 AM or 3 PM. No radiology department on earth looks like this. Turnaround by hour is meaningful and worth reading. Volume by hour is not, and the dashboard note says so.
 
 **Scan duration varies by exam type but not by scanner.** Any scanner-level difference you find in this data is case mix and random variation, not equipment performance. This is exactly why the analysis reports the scanner comparison as a non-finding rather than an action item.
 
 **Every relationship in here was generated rather than observed.** The analytical method carries over to real data without modification. The specific numbers do not carry over at all, and should never be quoted as though they describe a real department.
+
+
